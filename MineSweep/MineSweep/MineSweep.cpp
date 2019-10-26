@@ -52,27 +52,27 @@ bool flag(int x, int y, int *flagCount, char displayBoard[width][height], char* 
 
 int main()
 {
-	while (true) 
+	while (true)
 	{
 		play_minesweeper();
 
 		//Retry game?
 		cout << "Play Again? y/n" << endl;
 		char input;
-		while (true) 
+		while (true)
 		{
 			cin >> input;
 			if (input == 'y')
 				break;
-			else if ( input == 'n')
+			else if (input == 'n')
 				return 0;
 		}
 	}
 }
 
-void play_minesweeper() 
+void play_minesweeper()
 {
-	int board[width][height] = { 0 };	// the board data with the mine locations
+	int board[width][height] = { 0 };	// the board data with the mine locations 0 = blank space, 1 = mine
 	char displayBoard[9][9];			//the printed board the player can see and flag
 
 	char* mineLocations[numMines];	//A list of addresses of locations on displayBoard containing mines
@@ -167,14 +167,20 @@ void play_minesweeper()
 	}
 }
 
+// random generator function:
+int my_random(int i) 
+{
+	srand(time(0));
+	return rand() % i; 
+}
 
 void setup_board(int board[width][height], char displayBoard[width][height], char *mineLocations[numMines])
 {
 	//@TODO true random of mine placement
 
-	//create a list of pointers to board spaces
-	const int ptrLength = height * width;
-	pair<int, int> coordinates[ptrLength];
+	//create a list of coordinates
+	const int coordLength = height * width;
+	pair<int, int> coordinates[coordLength];
 
 	int l = 0;
 	for (size_t i = 0; i < height; i++)
@@ -187,7 +193,7 @@ void setup_board(int board[width][height], char displayBoard[width][height], cha
 	}
 
 	//shuffle array of locations
-	random_shuffle(coordinates, coordinates + ptrLength);
+	random_shuffle(coordinates, coordinates + coordLength, my_random);
 
 	//create a list of unique random spaces for mines to be placed from first [numMines] locations
 	for (size_t i = 0; i < numMines; ++i)
@@ -330,10 +336,10 @@ void reveal_area(int x, int y, int *flagCount, int board[width][height], char di
 		return;
 
 	//traverse other cells if mine not found
-	
+
 	//northwest
 //	if (x > 0 && y > 0)
-		reveal_area(x - 1, y - 1, flagCount, board, displayBoard);
+	reveal_area(x - 1, y - 1, flagCount, board, displayBoard);
 	//west
 	if (x > 0)
 		reveal_area(x - 1, y, flagCount, board, displayBoard);
@@ -347,7 +353,7 @@ void reveal_area(int x, int y, int *flagCount, int board[width][height], char di
 	//south
 	if (y < height)
 		reveal_area(x, y + 1, flagCount, board, displayBoard);
-	
+
 	//northeast
 	if (x < width && y > 0)
 		reveal_area(x + 1, y - 1, flagCount, board, displayBoard);
@@ -391,7 +397,7 @@ bool set_mine_count(int x, int y, int board[width][height], char displayBoard[wi
 
 	//set the mine Count on the displayboard
 	if (mineCount > 0)
-		displayBoard[x][y] = '0' + mineCount; 
+		displayBoard[x][y] = '0' + mineCount;
 	else
 		displayBoard[x][y] = '.';
 
