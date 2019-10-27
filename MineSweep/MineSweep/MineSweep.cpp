@@ -6,10 +6,9 @@
 #include <string>
 #include <algorithm>    // std::shuffle
 #include <array>        // std::array
-#include <random>       // std::default_random_engine
-#include <chrono>       // std::chrono::system_clock
+#include <time.h>       // time
 #include <utility>		// std::pair, std::tuple
-#include <stdlib.h>     // exit, EXIT_FAILURE
+#include <stdlib.h>     // exit, EXIT_FAILURE, srand, rand
 
 using namespace std;
 
@@ -17,7 +16,7 @@ const int width = 9;
 const int height = 9;
 
 //@TODO numMines = 10
-const int numMines = 2;
+const int numMines = 4;
 
 //input values
 const string exitString = "quit";
@@ -32,7 +31,7 @@ const char CHAR_FLAG = 'F';
 
 
 void play_minesweeper();
-
+bool is_valid_coordinate(int x, int y);
 enum class Operation
 {
 	Check,
@@ -124,7 +123,7 @@ void play_minesweeper()
 					int y = get<2>(processedInput);
 
 					//Process input for valid coordinate data 
-					if (x >= 0 && y >= 0 && x < width && y < height)
+					if (is_valid_coordinate(x,y))
 					{
 						//Operation: flag
 						if (inputOperation == Operation::Flag)
@@ -167,17 +166,20 @@ void play_minesweeper()
 	}
 }
 
-// random generator function:
-int my_random(int i) 
+bool is_valid_coordinate(int x, int y)
 {
-	srand(time(0));
-	return rand() % i; 
+	return (x >= 0 && y >= 0 && x < width && y < height);
+}
+
+// random generator function:
+int my_random(int i)
+{
+	srand(time(0));		//randomizes seed based on current time
+	return rand() % i;
 }
 
 void setup_board(int board[width][height], char displayBoard[width][height], char *mineLocations[numMines])
 {
-	//@TODO true random of mine placement
-
 	//create a list of coordinates
 	const int coordLength = height * width;
 	pair<int, int> coordinates[coordLength];
@@ -318,10 +320,9 @@ bool check_mine(int x, int y, int *flagCount, int board[width][height], char dis
 void reveal_area(int x, int y, int *flagCount, int board[width][height], char displayBoard[width][height])
 {
 	//Assumes that initial input is within bounds and does not contain a mine
-	cout << "Check: " << x << " " << y << endl; //@TODO remove
 
-	//if area already not valid, return;
-	if (displayBoard[x][y] != CHAR_BLANK && displayBoard[x][y] != CHAR_FLAG)
+	//if area already revealed, return;
+	if (!(displayBoard[x][y] == CHAR_BLANK || displayBoard[x][y] == CHAR_FLAG) || board[x][y] == 1)
 		return;
 
 	//if area revealed contains flag, clear the flag
@@ -331,6 +332,8 @@ void reveal_area(int x, int y, int *flagCount, int board[width][height], char di
 	//set the mine count for the current cell
 	bool minefound = set_mine_count(x, y, board, displayBoard);
 
+	cout << "Check: " << x << " " << y << " " << minefound << endl; //@TODO remove
+
 	//If a mine is found in adjacent area, return
 	if (minefound)
 		return;
@@ -338,30 +341,30 @@ void reveal_area(int x, int y, int *flagCount, int board[width][height], char di
 	//traverse other cells if mine not found
 
 	//northwest
-//	if (x > 0 && y > 0)
-	reveal_area(x - 1, y - 1, flagCount, board, displayBoard);
+	if (is_valid_coordinate(x - 1, y - 1))
+		reveal_area(x - 1, y - 1, flagCount, board, displayBoard);
 	//west
-	if (x > 0)
+	if (is_valid_coordinate(x - 1, y))
 		reveal_area(x - 1, y, flagCount, board, displayBoard);
 	//southwest
-	if (x > 0 && y < height)
+	if (is_valid_coordinate(x - 1, y + 1))
 		reveal_area(x - 1, y + 1, flagCount, board, displayBoard);
 
 	//north
-	if (y > 0)
+	if (is_valid_coordinate(x, y - 1))
 		reveal_area(x, y - 1, flagCount, board, displayBoard);
 	//south
-	if (y < height)
+	if (is_valid_coordinate(x, y + 1))
 		reveal_area(x, y + 1, flagCount, board, displayBoard);
 
 	//northeast
-	if (x < width && y > 0)
+	if (is_valid_coordinate(x + 1, y - 1))
 		reveal_area(x + 1, y - 1, flagCount, board, displayBoard);
 	//east
-	if (x < width)
+	if (is_valid_coordinate(x + 1, y))
 		reveal_area(x + 1, y, flagCount, board, displayBoard);
 	//southeast
-	if (x < width && y < height)
+	if (is_valid_coordinate(x + 1, y + 1))
 		reveal_area(x + 1, y + 1, flagCount, board, displayBoard);
 }
 
@@ -374,25 +377,23 @@ bool set_mine_count(int x, int y, int board[width][height], char displayBoard[wi
 
 	int mineCount = 0;
 
-	if (x > 0 && y > 0)
+	if (is_valid_coordinate(x - 1, y - 1))
 		mineCount += board[x - 1][y - 1];
-	if (x > 0)
+	if (is_valid_coordinate(x - 1, y))
 		mineCount += board[x - 1][y];
-	if (x > 0 && y < height - 1)
+	if (is_valid_coordinate(x - 1, y + 1))
 		mineCount += board[x - 1][y + 1];
 
-	if (y > 0)
+	if (is_valid_coordinate(x, y - 1))
 		mineCount += board[x][y - 1];
-
-	//mineCount += board[x][y];
-	if (y < height - 1)
+	if (is_valid_coordinate(x, y + 1))
 		mineCount += board[x][y + 1];
 
-	if (x < width - 1 && y > 0)
+	if (is_valid_coordinate(x + 1, y - 1))
 		mineCount += board[x + 1][y - 1];
-	if (x < width - 1)
+	if (is_valid_coordinate(x + 1, y))
 		mineCount += board[x + 1][y];
-	if (x < width - 1 && y < height - 1)
+	if (is_valid_coordinate(x + 1, y + 1))
 		mineCount += board[x + 1][y + 1];
 
 	//set the mine Count on the displayboard
