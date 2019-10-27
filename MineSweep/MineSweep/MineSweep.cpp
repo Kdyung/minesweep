@@ -16,7 +16,7 @@ const int width = 9;
 const int height = 9;
 
 //@TODO numMines = 10
-const int numMines = 4;
+const int numMines = 10;
 
 //input values
 const string exitString = "quit";
@@ -81,7 +81,7 @@ void play_minesweeper()
 
 	setup_board(board, displayBoard, mineLocations);
 
-	print_board(board);	//@TODO remove
+	//print_board(board);	//@TODO remove
 
 	bool gameIsRunning = true;
 	bool isLose = false;
@@ -332,7 +332,7 @@ void reveal_area(int x, int y, int *flagCount, int board[width][height], char di
 	//set the mine count for the current cell
 	bool minefound = set_mine_count(x, y, board, displayBoard);
 
-	cout << "Check: " << x << " " << y << " " << minefound << endl; //@TODO remove
+	//cout << "Check: " << x << " " << y << " " << minefound << endl; //@TODO remove
 
 	//If a mine is found in adjacent area, return
 	if (minefound)
