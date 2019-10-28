@@ -228,7 +228,8 @@ tuple<Operation, int, int> read_input_string(string input)
 
 	Operation o;
 	int x = (int)xKey - 65; //A == 65
-	int y = (int)yKey - '0';
+	int y = (int)yKey - '0'; //For now, the value is only 0-9. This will do.
+	//itoa(i, ...) for higher values
 
 	switch (operationKey)
 	{
