@@ -12,15 +12,15 @@
 
 using namespace std;
 
-const int width = 9;
-const int height = 9;
+const int WIDTH = 9;
+const int HEIGHT = 9;
 
-//@TODO numMines = 10
-const int numMines = 10;
+//@TODO NUM_MINES = 10
+const int NUM_MINES = 10;
 
 //input values
-const string exitString = "quit";
-const string showString = "show";
+const string STRING_EXIT = "quit";
+const string STRING_SHOW = "show";
 const char KEY_CHECK = 'c';
 const char KEY_FLAG = 'f';
 
@@ -39,14 +39,14 @@ enum class Operation
 };
 tuple<Operation, int, int> read_input_string(string input); // (operation, x coordinate, y coordinate)
 
-void print_board(char board[width][height]);
-void print_board(int board[width][height]);
-void setup_board(int board[width][height], char displayBoard[width][height], char *mineLocations[numMines]);
-void clear_display_board(char board[width][height]);
-bool check_mine(int x, int y, int *flagCount, int board[width][height], char displayBoard[width][height]);
-void reveal_area(int x, int y, int *flagCount, int board[width][height], char displayBoard[width][height]);
-bool set_mine_count(int x, int y, int board[width][height], char displayBoard[width][height]);
-bool flag(int x, int y, int *flagCount, char displayBoard[width][height], char* minelocations[numMines]); //Once all hidden mines are flagged, game is won. If mine is checked, game is lost
+void print_board(char board[WIDTH][HEIGHT]);
+void print_board(int board[WIDTH][HEIGHT]);
+void setup_board(int board[WIDTH][HEIGHT], char displayBoard[WIDTH][HEIGHT], char *mineLocations[NUM_MINES]);
+void clear_display_board(char board[WIDTH][HEIGHT]);
+bool check_mine(int x, int y, int *flagCount, int board[WIDTH][HEIGHT], char displayBoard[WIDTH][HEIGHT]);
+void reveal_area(int x, int y, int *flagCount, int board[WIDTH][HEIGHT], char displayBoard[WIDTH][HEIGHT]);
+bool set_mine_count(int x, int y, int board[WIDTH][HEIGHT], char displayBoard[WIDTH][HEIGHT]);
+bool flag(int x, int y, int *flagCount, char displayBoard[WIDTH][HEIGHT], char* minelocations[NUM_MINES]); //Once all hidden mines are flagged, game is won. If mine is checked, game is lost
 
 
 int main()
@@ -71,11 +71,11 @@ int main()
 
 void play_minesweeper()
 {
-	int board[width][height] = { 0 };	// the board data with the mine locations 0 = blank space, 1 = mine
+	int board[WIDTH][HEIGHT] = { 0 };	// the board data with the mine locations 0 = blank space, 1 = mine
 	char displayBoard[9][9];			//the printed board the player can see and flag
 
-	char* mineLocations[numMines];	//A list of addresses of locations on displayBoard containing mines
-	int flagCount = numMines;		//A count of the number of flags that can be placed
+	char* mineLocations[NUM_MINES];	//A list of addresses of locations on displayBoard containing mines
+	int flagCount = NUM_MINES;		//A count of the number of flags that can be placed
 
 	clear_display_board(displayBoard);
 
@@ -91,20 +91,20 @@ void play_minesweeper()
 		cout << endl;
 		cout << "Flag Count: " << flagCount << endl;
 		print_board(displayBoard);
-		cout << "Choose a spot to flag(f) or check(c). Example input: fA1 = flag (A,1).  Type \"" << showString << "\" to print the board. Type \"" << exitString << "\" to close game. \n";
+		cout << "Choose a spot to flag(f) or check(c). Example input: fA1 = flag (A,1).  Type \"" << STRING_SHOW << "\" to print the board. Type \"" << STRING_EXIT << "\" to close game. \n";
 
 		//Get player input
 		string input;
 		while (true)
 		{
 			cin >> input;
-			if (input.compare(exitString) == 0)
+			if (input.compare(STRING_EXIT) == 0)
 			{
 				//Close the program
 				exit(EXIT_SUCCESS);
 				return;
 			}
-			else if (input.compare(showString) == 0)
+			else if (input.compare(STRING_SHOW) == 0)
 			{
 				print_board(displayBoard);
 			}
@@ -123,7 +123,7 @@ void play_minesweeper()
 					int y = get<2>(processedInput);
 
 					//Process input for valid coordinate data 
-					if (is_valid_coordinate(x,y))
+					if (is_valid_coordinate(x, y))
 					{
 						//Operation: flag
 						if (inputOperation == Operation::Flag)
@@ -168,7 +168,7 @@ void play_minesweeper()
 
 bool is_valid_coordinate(int x, int y)
 {
-	return (x >= 0 && y >= 0 && x < width && y < height);
+	return (x >= 0 && y >= 0 && x < WIDTH && y < HEIGHT);
 }
 
 // random generator function:
@@ -178,16 +178,16 @@ int my_random(int i)
 	return rand() % i;
 }
 
-void setup_board(int board[width][height], char displayBoard[width][height], char *mineLocations[numMines])
+void setup_board(int board[WIDTH][HEIGHT], char displayBoard[WIDTH][HEIGHT], char *mineLocations[NUM_MINES])
 {
 	//create a list of coordinates
-	const int coordLength = height * width;
+	const int coordLength = HEIGHT * WIDTH;
 	pair<int, int> coordinates[coordLength];
 
 	int l = 0;
-	for (size_t i = 0; i < height; i++)
+	for (size_t i = 0; i < HEIGHT; i++)
 	{
-		for (size_t j = 0; j < width; j++)
+		for (size_t j = 0; j < WIDTH; j++)
 		{
 			coordinates[l] = make_pair(i, j);
 			++l;
@@ -197,8 +197,8 @@ void setup_board(int board[width][height], char displayBoard[width][height], cha
 	//shuffle array of locations
 	random_shuffle(coordinates, coordinates + coordLength, my_random);
 
-	//create a list of unique random spaces for mines to be placed from first [numMines] locations
-	for (size_t i = 0; i < numMines; ++i)
+	//create a list of unique random spaces for mines to be placed from first [NUM_MINES] locations
+	for (size_t i = 0; i < NUM_MINES; ++i)
 	{
 		int x = coordinates[i].first;
 		int y = coordinates[i].second;
@@ -208,11 +208,11 @@ void setup_board(int board[width][height], char displayBoard[width][height], cha
 }
 
 
-void print_board(int board[width][height])
+void print_board(int board[WIDTH][HEIGHT])
 {
-	for (int i = 0; i < height; i++)
+	for (int i = 0; i < HEIGHT; i++)
 	{
-		for (size_t j = 0; j < width; j++) {
+		for (size_t j = 0; j < WIDTH; j++) {
 			cout << board[j][i] << " ";
 		}
 		cout << '\n';
@@ -251,21 +251,21 @@ tuple<Operation, int, int> read_input_string(string input)
 	return make_tuple(o, x, y);
 }
 
-void print_board(char board[width][height])
+void print_board(char board[WIDTH][HEIGHT])
 {
 	cout << " \t";
 	char legendChar = 'A';
-	for (int k = 0; k < width; k++)
+	for (int k = 0; k < WIDTH; k++)
 	{
 		cout << legendChar << " ";
 		++legendChar;
 	}
 	cout << '\n';
 
-	for (int i = 0; i < height; i++)
+	for (int i = 0; i < HEIGHT; i++)
 	{
 		cout << i << '\t';
-		for (size_t j = 0; j < width; j++) {
+		for (size_t j = 0; j < WIDTH; j++) {
 			cout << board[j][i] << " ";
 		}
 		cout << '\n';
@@ -273,11 +273,11 @@ void print_board(char board[width][height])
 }
 
 
-void clear_display_board(char board[width][height])
+void clear_display_board(char board[WIDTH][HEIGHT])
 {
-	for (int i = 0; i < height; i++)
+	for (int i = 0; i < HEIGHT; i++)
 	{
-		for (size_t j = 0; j < width; j++) {
+		for (size_t j = 0; j < WIDTH; j++) {
 			board[i][j] = 'x';
 		}
 	}
@@ -285,7 +285,7 @@ void clear_display_board(char board[width][height])
 }
 
 //returns true if a mine exists at (x,y)
-bool check_mine(int x, int y, int *flagCount, int board[width][height], char displayBoard[width][height])
+bool check_mine(int x, int y, int *flagCount, int board[WIDTH][HEIGHT], char displayBoard[WIDTH][HEIGHT])
 {
 	//Assumes that initial input is within bounds
 
@@ -300,9 +300,9 @@ bool check_mine(int x, int y, int *flagCount, int board[width][height], char dis
 		//Reveal all Mines
 
 		//Greedy way : iterate on board and set character on displayBoard
-		for (int i = 0; i < height; i++)
+		for (int i = 0; i < HEIGHT; i++)
 		{
-			for (int j = 0; j < width; j++) {
+			for (int j = 0; j < WIDTH; j++) {
 				if (board[j][i] == 1)
 					displayBoard[j][i] = 'M';
 			}
@@ -317,7 +317,7 @@ bool check_mine(int x, int y, int *flagCount, int board[width][height], char dis
 }
 
 
-void reveal_area(int x, int y, int *flagCount, int board[width][height], char displayBoard[width][height])
+void reveal_area(int x, int y, int *flagCount, int board[WIDTH][HEIGHT], char displayBoard[WIDTH][HEIGHT])
 {
 	//Assumes that initial input is within bounds and does not contain a mine
 
@@ -371,7 +371,7 @@ void reveal_area(int x, int y, int *flagCount, int board[width][height], char di
 
 //Given a cell, figures out the nearby mines and sets the displayed value on the displayBoard. 
 //Returns true if a mine was detected in an adjacent square.
-bool set_mine_count(int x, int y, int board[width][height], char displayBoard[width][height])
+bool set_mine_count(int x, int y, int board[WIDTH][HEIGHT], char displayBoard[WIDTH][HEIGHT])
 {
 	//Assumes that current cell does not contain a mine and that coordinates are valid
 
@@ -407,7 +407,7 @@ bool set_mine_count(int x, int y, int board[width][height], char displayBoard[wi
 
 
 //returns true if game is won
-bool flag(int x, int y, int *flagCount, char displayBoard[width][height], char* minelocations[numMines])
+bool flag(int x, int y, int *flagCount, char displayBoard[WIDTH][HEIGHT], char* minelocations[NUM_MINES])
 {
 	char *temp = &displayBoard[x][y];
 	if (*temp != CHAR_BLANK && *temp != CHAR_FLAG)
@@ -426,7 +426,7 @@ bool flag(int x, int y, int *flagCount, char displayBoard[width][height], char* 
 			//Check if game is won if all flags placed on mines
 			if (*flagCount == 0)
 			{
-				for (int i = 0; i < numMines; i++)
+				for (int i = 0; i < NUM_MINES; i++)
 				{
 					if (*minelocations[i] != CHAR_FLAG)
 						return false;
@@ -435,7 +435,7 @@ bool flag(int x, int y, int *flagCount, char displayBoard[width][height], char* 
 			}
 
 		}
-		else if (*temp == CHAR_FLAG && *flagCount < numMines)
+		else if (*temp == CHAR_FLAG && *flagCount < NUM_MINES)
 		{
 			*temp = CHAR_BLANK;
 			++*flagCount;
