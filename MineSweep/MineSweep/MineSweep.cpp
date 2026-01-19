@@ -9,6 +9,7 @@
 #include <time.h>       // time
 #include <utility>		// std::pair, std::tuple
 #include <stdlib.h>     // exit, EXIT_FAILURE, srand, rand
+#include <tuple>
 
 using namespace std;
 
@@ -419,7 +420,7 @@ bool flag(int x, int y, int *flagCount, char displayBoard[WIDTH][HEIGHT], char* 
 	else
 	{
 		//Toggle flag or blank
-		if (*temp == CHAR_BLANK && flagCount > 0)
+		if (*temp == CHAR_BLANK && *flagCount > 0)
 		{
 			*temp = CHAR_FLAG;
 			--*flagCount;
